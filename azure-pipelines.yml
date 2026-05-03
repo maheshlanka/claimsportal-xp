@@ -12,6 +12,7 @@ pool:
 steps:
 - task: Maven@3
   inputs:
+    mavenPath: '/Users/maheshvaas/Azure Agents/apache-maven-3.9.15/apache-maven/src/bin'
     mavenPomFile: 'pom.xml'
     mavenOptions: '-Xmx3072m'
     javaHomeOption: 'JDKVersion'
