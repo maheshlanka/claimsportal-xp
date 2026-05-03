@@ -12,7 +12,6 @@ pool:
 steps:
 - task: Maven@3
   inputs:
-    mavenPath: '/Users/maheshvaas/softwares/apache-maven-4.0.0-rc-5/bin'
     mavenPomFile: 'pom.xml'
     mavenOptions: '-Xmx3072m'
     javaHomeOption: 'JDKVersion'
