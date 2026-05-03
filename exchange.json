@@ -1,3 +1,5 @@
 {
-  "dependencies": []
+  "dependencies": [],
+  "name": "ClaimsPortal-XP",
+  "main": "src/main/resources/api/claimsportal.raml"
 }
