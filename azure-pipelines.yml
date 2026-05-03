@@ -15,7 +15,7 @@ steps:
     mavenPomFile: 'pom.xml'
     mavenOptions: '-Xmx3072m'
     javaHomeOption: 'path'
-    jdkDirectory: '/Library/Java/JavaVirtualMachines/jdk-11.jdk/Contents/Home'
+    jdkDirectory: '/Library/Java/JavaVirtualMachines/microsoft-11.jdk/Contents/Home'
     jdkArchitectureOption: 'x64'
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
