@@ -1,5 +1,6 @@
 {
   "dependencies": [],
   "name": "ClaimsPortal-XP",
-  "main": "src/main/resources/api/claimsportal.raml"
+  "main": "src/main/resources/api/claimsportal.raml",
+  "groupId": "1e867083-109a-4b47-8f41-44b357f67b49"
 }
