@@ -14,7 +14,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<app.runtime>4.9.16</app.runtime>
-		<mule.maven.plugin.version>4.7.0</mule.maven.plugin.version>
+		<mule.maven.plugin.version>3.9.15</mule.maven.plugin.version>
 	</properties>
 
 	<build>
@@ -28,7 +28,7 @@
 			<plugin>
     <groupId>org.mule.tools.maven</groupId>
     <artifactId>mule-maven-plugin</artifactId>
-    <version>4.7.0</version>
+    <version>3.9.15</version>
     <extensions>true</extensions>
     <configuration>
         <cloudhub2Deployment>
