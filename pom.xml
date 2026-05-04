@@ -71,6 +71,11 @@
 			<version>1.11.11</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
+		<dependency>
+    <groupId>com.google.guava</groupId>
+    <artifactId>guava</artifactId>
+    <version>33.2.1-jre</version>
+</dependency>
 	</dependencies>
 
 	<repositories>
@@ -86,6 +91,11 @@
 			<url>https://repository.mulesoft.org/nexus/repository/releases/</url>
 			<layout>default</layout>
 		</repository>
+		<repository>
+    <id>central</id>
+    <name>Maven Central</name>
+    <url>https://repo.maven.apache.org/maven2</url>
+</repository>
 	</repositories>
 
 	<pluginRepositories>
