@@ -2,5 +2,12 @@
   "dependencies": [],
   "name": "ClaimsPortal-XP",
   "main": "src/main/resources/api/claimsportal.raml",
-  "groupId": "1e867083-109a-4b47-8f41-44b357f67b49"
+  "groupId": "1e867083-109a-4b47-8f41-44b357f67b49",
+  "organizationId": "1e867083-109a-4b47-8f41-44b357f67b49",
+  "assetId": "claimsportal-xp",
+  "version": "1.0.1",
+  "apiVersion": "V1",
+  "tags": [],
+  "classifier": "raml",
+  "originalFormatVersion": "1.0"
 }
