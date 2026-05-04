@@ -36,7 +36,7 @@
             <provider>MC</provider> <!-- This stands for MuleSoft Cloud -->
             <environment>Sandbox</environment>
             <target>Cloudhub-US-East-2</target> <!-- Change to your region -->
-            <muleVersion>4.9.16</muleVersion>
+            <muleVersion>${app.runtime}</muleVersion>
             <username>${anypoint.username}</username>
             <password>${anypoint.password}</password>
             <applicationName>claimsportal-xp</applicationName>
