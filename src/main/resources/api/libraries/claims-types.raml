@@ -1,2 +1,109 @@
 #%RAML 1.0 Library
-usage:
+
+types:
+
+  Claim:
+    type: object
+    properties:
+      claimId?:
+        type: string
+        example: "CLM100001"
+      policyNumber:
+        type: string
+        example: "POL123456"
+      customerId:
+        type: string
+        example: "CUST10001"
+      claimantName:
+        type: string
+        example: "John Tan"
+      claimantEmail?:
+        type: string
+        example: "john.tan@example.com"
+      claimantMobile?:
+        type: string
+        example: "+85290000000"
+      claimType:
+        type: string
+        enum: [MEDICAL, MOTOR, TRAVEL, LIFE, PROPERTY, OTHER]
+        example: MEDICAL
+      claimStatus?:
+        type: string
+        enum: [SUBMITTED, IN_REVIEW, APPROVED, REJECTED, PAID, CANCELLED]
+        example: SUBMITTED
+      incidentDate:
+        type: date-only
+        example: 2026-05-01
+      reportedDate?:
+        type: date-only
+        example: 2026-05-02
+      claimAmount:
+        type: number
+        format: double
+        example: 2500.50
+      currency:
+        type: string
+        example: "HKD"
+      description?:
+        type: string
+        example: "Medical claim submission"
+      sourceSystem?:
+        type: string
+        example: "CLAIMS_PORTAL"
+
+  ClaimCreateRequest:
+    type: object
+    properties:
+      policyNumber: string
+      customerId: string
+      claimantName: string
+      claimantEmail?: string
+      claimantMobile?: string
+      claimType:
+        type: string
+        enum: [MEDICAL, MOTOR, TRAVEL, LIFE, PROPERTY, OTHER]
+      incidentDate: date-only
+      claimAmount:
+        type: number
+        format: double
+      currency:
+        type: string
+        example: "HKD"
+      description?: string
+      sourceSystem?: string
+      additionalInfo?:
+        type: object
+        properties:
+          hospitalName?: string
+          vehicleNumber?: string
+          accidentLocation?: string
+          agentCode?: string
+
+  ClaimUpdateRequest:
+    type: object
+    properties:
+      claimStatus?:
+        type: string
+        enum: [SUBMITTED, IN_REVIEW, APPROVED, REJECTED, PAID, CANCELLED]
+      claimAmount?:
+        type: number
+        format: double
+      description?: string
+      updatedBy:
+        type: string
+        example: "claims.officer"
+
+  ClaimResponse:
+    type: object
+    properties:
+      success: boolean
+      message: string
+      claim: Claim
+
+  ClaimListResponse:
+    type: object
+    properties:
+      totalRecords: integer
+      page: integer
+      pageSize: integer
+      claims: Claim[]
