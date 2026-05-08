@@ -1,0 +1,93 @@
+#%RAML 1.0 Library
+
+types:
+
+  PaymentRequest:
+    type: object
+    properties:
+      claimId:
+        type: string
+        example: "CLM100001"
+      policyNumber:
+        type: string
+        example: "POL123456"
+      customerId:
+        type: string
+        example: "CUST10001"
+      paymentMethod:
+        type: string
+        enum: [VISA, MASTERCARD, JETCO, BANK_TRANSFER, WALLET]
+        example: VISA
+      amount:
+        type: number
+        format: double
+        example: 2400.00
+      currency:
+        type: string
+        example: "HKD"
+      cardDetails?:
+        type: object
+        properties:
+          cardNumber?: string
+          cardHolderName?: string
+          expiryMonth?: string
+          expiryYear?: string
+          cvv?: string
+      bankDetails?:
+        type: object
+        properties:
+          bankCode?: string
+          accountNumber?: string
+          accountHolderName?: string
+      remarks?:
+        type: string
+        example: "Claim payment settlement"
+
+  PaymentResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        example: true
+      paymentId:
+        type: string
+        example: "PAY100001"
+      claimId:
+        type: string
+        example: "CLM100001"
+      transactionReference:
+        type: string
+        example: "TXN202605090001"
+      paymentStatus:
+        type: string
+        enum: [INITIATED, SUCCESS, FAILED, PENDING, CANCELLED]
+        example: SUCCESS
+      message:
+        type: string
+        example: "Payment processed successfully"
+      paidAmount:
+        type: number
+        format: double
+        example: 2400.00
+      currency:
+        type: string
+        example: "HKD"
+      paymentDate?:
+        type: datetime
+        example: 2026-05-09T10:30:00Z
+
+  PaymentStatusUpdateRequest:
+    type: object
+    properties:
+      paymentStatus:
+        type: string
+        enum: [SUCCESS, FAILED, PENDING, CANCELLED]
+      transactionReference?:
+        type: string
+        example: "TXN202605090001"
+      failureReason?:
+        type: string
+        example: "Payment gateway timeout"
+      updatedBy:
+        type: string
+        example: "payment.gateway"
