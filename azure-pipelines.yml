@@ -78,3 +78,6 @@ stages:
           -DmuleDeploy
           -Danypoint.username=$(ANYPOINT_PLATFORM_USERNAME)
           -Danypoint.password=$(ANYPOINT_PLATFORM_PASSWORD)
+          -Dapi.id=$(API_ID)
+          -Danypoint.platform.client_id=$(ANYPOINT_PLATFORM_CLIENT_ID)
+          -Danypoint.platform.client_secret=$(ANYPOINT_PLATFORM_CLIENT_SECRET)
