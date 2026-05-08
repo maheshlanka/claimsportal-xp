@@ -4,7 +4,7 @@
 
 	<groupId>1e867083-109a-4b47-8f41-44b357f67b49</groupId>
 	<artifactId>claimsportal-xp-app</artifactId>
-	<version>1.0.4</version>
+	<version>1.0.5</version>
 	<packaging>mule-application</packaging>
 
 	<name>ClaimsPortal-XP</name>
