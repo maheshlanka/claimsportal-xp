@@ -16,6 +16,8 @@ uses:
   paymentLib: libraries/payment-types.raml
   errorTraits: libraries/error-traits.raml
 
+securedBy:
+  - basicAuth
 /healthCheck:
   get:
     description: This API will get status of the service running
@@ -25,9 +27,6 @@ uses:
           application/json:
             example:
               !include /healthCheckSuccessResponse.json
-
-securedBy:
-  - basicAuth
 
 securitySchemes:
   basicAuth:
