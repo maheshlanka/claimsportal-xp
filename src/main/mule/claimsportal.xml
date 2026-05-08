@@ -129,17 +129,17 @@ output application/json
         </error-handler>
     </flow>
     <flow name="get:\healthCheck:claimsportal-config">
-        <ee:transform doc:name="Transform Message">
+        <ee:transform doc:name="Set Payload">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
-  "\$schema": "https://json-schema.org/draft-07/schema",
   title: "healthCheckSuccessResponse",
   Status: "System is Up!"
-} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+} ]]></ee:set-payload>
             </ee:message>
         </ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="c20ebc30-4649-4175-8483-7fc0f1e31fd7" message='#["Payload is": payload]'/>
     </flow>
 </mule>
