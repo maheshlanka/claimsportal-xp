@@ -18,6 +18,11 @@ uses:
 
 securedBy:
   - basicAuth
+
+securitySchemes:
+  basicAuth:
+    type: Basic Authentication
+    description: Basic Authentication or API Manager policy-based authentication.
 /healthCheck:
   get:
     description: This API will get status of the service running
@@ -28,7 +33,240 @@ securedBy:
             example:
               !include /healthCheckSuccessResponse.json
 
-securitySchemes:
-  basicAuth:
-    type: Basic Authentication
-    description: Basic Authentication or API Manager policy-based authentication.
+/claims:
+  get:
+    displayName: Fetch Claims
+    description: Fetch claims and return response in JSON, XML, CSV, or multipart format.
+    is:
+      - traitsLib.clientHeaders
+      - traitsLib.pagination
+      - traitsLib.dateRange
+      - traitsLib.responseFormat
+      - errorTraits.standardErrorResponses
+    queryParameters:
+      claimId:
+        type: string
+        required: false
+        example: "CLM100001"
+      policyNumber:
+        type: string
+        required: false
+        example: "POL123456"
+      customerId:
+        type: string
+        required: false
+        example: "CUST10001"
+      claimStatus:
+        type: string
+        required: false
+        enum: [SUBMITTED, IN_REVIEW, APPROVED, REJECTED, PAID, CANCELLED]
+      claimType:
+        type: string
+        required: false
+        enum: [MEDICAL, MOTOR, TRAVEL, LIFE, PROPERTY, OTHER]
+    responses:
+      200:
+        body:
+          application/json:
+            type: claimsLib.ClaimListResponse
+          application/xml:
+            example: |
+              <claimsResponse>
+                <totalRecords>1</totalRecords>
+                <page>1</page>
+                <pageSize>10</pageSize>
+                <claims>
+                  <claim>
+                    <claimId>CLM100001</claimId>
+                    <policyNumber>POL123456</policyNumber>
+                    <customerId>CUST10001</customerId>
+                    <claimantName>John Tan</claimantName>
+                    <claimType>MEDICAL</claimType>
+                    <claimStatus>SUBMITTED</claimStatus>
+                    <incidentDate>2026-05-01</incidentDate>
+                    <claimAmount>2500.50</claimAmount>
+                    <currency>HKD</currency>
+                  </claim>
+                </claims>
+              </claimsResponse>
+          text/csv:
+            example: |
+              claimId,policyNumber,customerId,claimantName,claimType,claimStatus,incidentDate,claimAmount,currency
+              CLM100001,POL123456,CUST10001,John Tan,MEDICAL,SUBMITTED,2026-05-01,2500.50,HKD
+          multipart/form-data:
+            properties:
+              metadata:
+                type: string
+                required: true
+              claimsFile:
+                type: file
+                required: false
+                fileTypes:
+                  - application/json
+                  - application/xml
+                  - text/csv
+
+  post:
+    displayName: Create Claim
+    description: Create claim using JSON request payload.
+    is:
+      - traitsLib.clientHeaders
+      - errorTraits.standardErrorResponses
+    body:
+      application/json:
+        type: claimsLib.ClaimCreateRequest
+      application/xml:
+        example: |
+          <claim>
+            <policyNumber>POL123456</policyNumber>
+            <customerId>CUST10001</customerId>
+            <claimantName>John Tan</claimantName>
+            <claimType>MEDICAL</claimType>
+            <incidentDate>2026-05-01</incidentDate>
+            <claimAmount>2500.50</claimAmount>
+            <currency>HKD</currency>
+          </claim>
+      text/csv:
+        example: |
+          policyNumber,customerId,claimantName,claimType,incidentDate,claimAmount,currency,description
+          POL123456,CUST10001,John Tan,MEDICAL,2026-05-01,2500.50,HKD,Hospital claim
+      multipart/form-data:
+        properties:
+          metadata:
+            type: string
+            required: true
+          claimFile:
+            type: file
+            required: false
+            fileTypes:
+              - application/pdf
+              - image/png
+              - image/jpeg
+              - text/csv
+              - application/xml
+    responses:
+      201:
+        body:
+          application/json:
+            type: claimsLib.ClaimResponse
+
+  /{claimId}:
+    uriParameters:
+      claimId:
+        type: string
+        required: true
+        example: "CLM100001"
+
+    get:
+      displayName: Fetch Claim By ID
+      description: Fetch single claim and return response in JSON, XML, CSV, or multipart format.
+      is:
+        - traitsLib.clientHeaders
+        - traitsLib.responseFormat
+        - errorTraits.standardErrorResponses
+      responses:
+        200:
+          body:
+            application/json:
+              type: claimsLib.ClaimResponse
+            application/xml:
+              example: |
+                <claimResponse>
+                  <success>true</success>
+                  <message>Claim fetched successfully</message>
+                  <claim>
+                    <claimId>CLM100001</claimId>
+                    <policyNumber>POL123456</policyNumber>
+                    <customerId>CUST10001</customerId>
+                    <claimantName>John Tan</claimantName>
+                    <claimType>MEDICAL</claimType>
+                    <claimStatus>IN_REVIEW</claimStatus>
+                    <incidentDate>2026-05-01</incidentDate>
+                    <claimAmount>2500.50</claimAmount>
+                    <currency>HKD</currency>
+                  </claim>
+                </claimResponse>
+            text/csv:
+              example: |
+                success,message,claimId,policyNumber,customerId,claimantName,claimType,claimStatus,incidentDate,claimAmount,currency
+                true,Claim fetched successfully,CLM100001,POL123456,CUST10001,John Tan,MEDICAL,IN_REVIEW,2026-05-01,2500.50,HKD
+
+    put:
+      displayName: Update Claim
+      is:
+        - traitsLib.clientHeaders
+        - errorTraits.standardErrorResponses
+      body:
+        application/json:
+          type: claimsLib.ClaimUpdateRequest
+      responses:
+        200:
+          body:
+            application/json:
+              type: claimsLib.ClaimResponse
+
+/claims/data:
+  post:
+    displayName: Submit Claim Data - JSON, CSV, XML, Multipart
+    description: Submit claim data in JSON, CSV, XML, or multipart format.
+    is:
+      - traitsLib.clientHeaders
+      - errorTraits.standardErrorResponses
+    queryParameters:
+      sourceSystem:
+        type: string
+        required: true
+        example: "CLAIMS_PORTAL"
+      batchId:
+        type: string
+        required: false
+        example: "BATCH20260509001"
+      validateOnly:
+        type: boolean
+        required: false
+        default: false
+    body:
+      application/json:
+        type: claimsLib.ClaimCreateRequest
+
+      text/csv:
+        example: |
+          policyNumber,customerId,claimantName,claimType,incidentDate,claimAmount,currency,description
+          POL123456,CUST10001,John Tan,MEDICAL,2026-05-01,2500.50,HKD,Hospital claim
+
+      application/xml:
+        example: |
+          <claim>
+            <policyNumber>POL123456</policyNumber>
+            <customerId>CUST10001</customerId>
+            <claimantName>John Tan</claimantName>
+            <claimType>MEDICAL</claimType>
+            <incidentDate>2026-05-01</incidentDate>
+            <claimAmount>2500.50</claimAmount>
+            <currency>HKD</currency>
+          </claim>
+
+      multipart/form-data:
+        properties:
+          metadata:
+            type: string
+            required: true
+          claimFile:
+            type: file
+            required: false
+            fileTypes:
+              - application/pdf
+              - image/png
+              - image/jpeg
+              - text/csv
+              - application/xml
+    responses:
+      202:
+        body:
+          application/json:
+            example:
+              success: true
+              message: "Claim data accepted for processing"
+              batchId: "BATCH20260509001"
+              acceptedRecords: 1
+              rejectedRecords: 0
