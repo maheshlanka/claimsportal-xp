@@ -270,3 +270,183 @@ securitySchemes:
               batchId: "BATCH20260509001"
               acceptedRecords: 1
               rejectedRecords: 0
+
+/files:
+  /upload:
+    post:
+      displayName: Upload Claim File
+      is:
+        - traitsLib.clientHeaders
+        - errorTraits.standardErrorResponses
+      queryParameters:
+        claimId:
+          type: string
+          required: true
+          example: "CLM100001"
+        documentType:
+          type: string
+          required: true
+          enum: [INVOICE, RECEIPT, MEDICAL_REPORT, ACCIDENT_REPORT, ID_PROOF, POLICY_DOCUMENT, OTHER]
+        uploadedBy:
+          type: string
+          required: true
+          example: "john.tan"
+      body:
+        multipart/form-data:
+          properties:
+            file:
+              type: file
+              required: true
+              fileTypes:
+                - application/pdf
+                - image/png
+                - image/jpeg
+                - text/csv
+                - application/xml
+            fileName:
+              type: string
+              required: false
+              example: "medical-report.pdf"
+            remarks:
+              type: string
+              required: false
+      responses:
+        201:
+          body:
+            application/json:
+              type: fileLib.FileUploadResponse
+
+  /download/{fileId}:
+    uriParameters:
+      fileId:
+        type: string
+        required: true
+        example: "FILE100001"
+    get:
+      displayName: Download Claim File
+      is:
+        - traitsLib.clientHeaders
+        - errorTraits.standardErrorResponses
+      queryParameters:
+        claimId:
+          type: string
+          required: false
+          example: "CLM100001"
+        downloadFormat:
+          type: string
+          required: false
+          enum: [BINARY, BASE64]
+          default: BINARY
+      responses:
+        200:
+          body:
+            application/octet-stream:
+              description: Binary file download response.
+            application/json:
+              type: fileLib.FileDownloadResponse
+
+  /metadata/{fileId}:
+    uriParameters:
+      fileId:
+        type: string
+        required: true
+        example: "FILE100001"
+    get:
+      displayName: Fetch File Metadata
+      is:
+        - traitsLib.clientHeaders
+        - errorTraits.standardErrorResponses
+      responses:
+        200:
+          body:
+            application/json:
+              type: fileLib.FileMetadataResponse
+
+/payments:
+  post:
+    displayName: Initiate Claim Payment
+    is:
+      - traitsLib.clientHeaders
+      - errorTraits.standardErrorResponses
+    body:
+      application/json:
+        type: paymentLib.PaymentRequest
+    responses:
+      201:
+        body:
+          application/json:
+            type: paymentLib.PaymentResponse
+
+  get:
+    displayName: Fetch Payments
+    is:
+      - traitsLib.clientHeaders
+      - traitsLib.pagination
+      - traitsLib.dateRange
+      - errorTraits.standardErrorResponses
+    queryParameters:
+      paymentId:
+        type: string
+        required: false
+        example: "PAY100001"
+      claimId:
+        type: string
+        required: false
+        example: "CLM100001"
+      customerId:
+        type: string
+        required: false
+        example: "CUST10001"
+      paymentStatus:
+        type: string
+        required: false
+        enum: [INITIATED, SUCCESS, FAILED, PENDING, CANCELLED]
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              totalRecords: 1
+              page: 1
+              pageSize: 10
+              payments:
+                - success: true
+                  paymentId: "PAY100001"
+                  claimId: "CLM100001"
+                  transactionReference: "TXN202605090001"
+                  paymentStatus: SUCCESS
+                  message: "Payment processed successfully"
+                  paidAmount: 2400.00
+                  currency: "HKD"
+
+  /{paymentId}:
+    uriParameters:
+      paymentId:
+        type: string
+        required: true
+        example: "PAY100001"
+    get:
+      displayName: Fetch Payment By ID
+      is:
+        - traitsLib.clientHeaders
+        - errorTraits.standardErrorResponses
+      responses:
+        200:
+          body:
+            application/json:
+              type: paymentLib.PaymentResponse
+
+    /status:
+      put:
+        displayName: Update Payment Status
+        is:
+          - traitsLib.clientHeaders
+          - errorTraits.standardErrorResponses
+        body:
+          application/json:
+            type: paymentLib.PaymentStatusUpdateRequest
+        responses:
+          200:
+            body:
+              application/json:
+                type: paymentLib.PaymentResponse
