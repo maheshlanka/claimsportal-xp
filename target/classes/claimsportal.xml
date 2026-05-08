@@ -7,7 +7,7 @@ http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/
 		</http:listener-connection>
     </http:listener-config>
     <apikit:config name="claimsportal-config" api="claimsportal.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
-    <api-gateway:autodiscovery apiId="20894728" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="fcbdf3ba-fb99-4bae-b47f-61da3312252b" flowRef="claimsportal-main" />
+    <api-gateway:autodiscovery apiId="${api.Id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="fcbdf3ba-fb99-4bae-b47f-61da3312252b" flowRef="claimsportal-main" />
 	<flow name="claimsportal-main">
         <http:listener config-ref="claimsportal-httpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
