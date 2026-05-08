@@ -5,9 +5,10 @@
 
 trigger:
 - main
-
 pool:
   name: 'Default'
+variables:
+  MAVEN_OPTS: '-Xmx3072m'
 
 stages:
 - stage: Build
@@ -17,42 +18,60 @@ stages:
     displayName: 'Build Job'
     steps:
     - task: Maven@3
-      displayName: 'Build Package'
+      displayName: 'Build Mule Package'
       inputs:
         mavenPomFile: 'pom.xml'
-        mavenOptions: '-Xmx3072m'
+        mavenOptions: '$(MAVEN_OPTS)'
         javaHomeOption: 'path'
         jdkDirectory: '/Library/Java/JavaVirtualMachines/microsoft-11.jdk/Contents/Home'
         jdkArchitectureOption: 'x64'
         publishJUnitResults: true
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
         goals: 'clean package'
+        options: '-DskipTests -U'
+
+- stage: PublishExchange
+  displayName: 'Publish Package to Anypoint Exchange'
+  dependsOn: Build
+  condition: succeeded()
+  jobs:
+  - job: PublishExchangeJob
+    displayName: 'Publish to Exchange'
+    steps:
+    - task: Maven@3
+      displayName: 'Publish Mule App to Exchange'
+      inputs:
+        mavenPomFile: 'pom.xml'
+        mavenOptions: '$(MAVEN_OPTS)'
+        javaHomeOption: 'path'
+        jdkDirectory: '/Library/Java/JavaVirtualMachines/microsoft-11.jdk/Contents/Home'
+        jdkArchitectureOption: 'x64'
+        publishJUnitResults: false
+        goals: 'deploy'
         options: >
-          -DskipTests 
+          -DskipTests
           -U
-          -DmuleDeploy
           -Danypoint.username=$(ANYPOINT_PLATFORM_USERNAME)
           -Danypoint.password=$(ANYPOINT_PLATFORM_PASSWORD)
 
-
 - stage: Deploy
   displayName: 'Deploy Mule Application'
-  dependsOn: Build
+  dependsOn: PublishExchange
   condition: succeeded()
   jobs:
   - job: DeployJob
     displayName: 'Deploy Job'
     steps:
     - task: Maven@3
-      displayName: 'Deploy to CloudHub / Runtime Manager'
+      displayName: 'Deploy to Runtime Manager'
       inputs:
         mavenPomFile: 'pom.xml'
-        mavenOptions: '-Xmx3072m'
+        mavenOptions: '$(MAVEN_OPTS)'
         javaHomeOption: 'path'
         jdkDirectory: '/Library/Java/JavaVirtualMachines/microsoft-11.jdk/Contents/Home'
         jdkArchitectureOption: 'x64'
         publishJUnitResults: false
-        goals: 'deploy'
+        goals: 'mule:deploy'
         options: >
           -DskipTests
           -U
