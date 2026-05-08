@@ -5,7 +5,7 @@
   "groupId": "1e867083-109a-4b47-8f41-44b357f67b49",
   "organizationId": "1e867083-109a-4b47-8f41-44b357f67b49",
   "assetId": "claimsportal-xp",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "apiVersion": "V2",
   "tags": [],
   "classifier": "raml",
