@@ -1,0 +1,75 @@
+#%RAML 1.0 Library
+
+types:
+
+  FileUploadResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        example: true
+      message:
+        type: string
+        example: "File uploaded successfully"
+      fileId:
+        type: string
+        example: "FILE100001"
+      claimId?:
+        type: string
+        example: "CLM100001"
+      fileName:
+        type: string
+        example: "medical-report.pdf"
+      fileType:
+        type: string
+        example: "application/pdf"
+      fileSize:
+        type: integer
+        example: 204800
+      uploadedDate:
+        type: datetime
+        example: 2026-05-09T10:00:00Z
+
+  FileDownloadResponse:
+    type: object
+    properties:
+      fileId:
+        type: string
+        example: "FILE100001"
+      fileName:
+        type: string
+        example: "medical-report.pdf"
+      contentType:
+        type: string
+        example: "application/pdf"
+      fileContentBase64:
+        type: string
+        example: "JVBERi0xLjQKJcfs..."
+
+  FileMetadataResponse:
+    type: object
+    properties:
+      fileId:
+        type: string
+        example: "FILE100001"
+      claimId:
+        type: string
+        example: "CLM100001"
+      fileName:
+        type: string
+        example: "medical-report.pdf"
+      fileType:
+        type: string
+        example: "application/pdf"
+      fileSize:
+        type: integer
+        example: 204800
+      documentType:
+        type: string
+        enum: [INVOICE, RECEIPT, MEDICAL_REPORT, ACCIDENT_REPORT, ID_PROOF, POLICY_DOCUMENT, OTHER]
+      uploadedBy:
+        type: string
+        example: "john.tan"
+      uploadedDate:
+        type: datetime
+        example: 2026-05-09T10:00:00Z
