@@ -27,7 +27,13 @@ stages:
         publishJUnitResults: true
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
         goals: 'clean package'
-        options: '-DskipTests -U'
+        options: >
+          -DskipTests 
+          -U
+          -DmuleDeploy
+          -Danypoint.username=$(ANYPOINT_PLATFORM_USERNAME)
+          -Danypoint.password=$(ANYPOINT_PLATFORM_PASSWORD)
+
 
 - stage: Deploy
   displayName: 'Deploy Mule Application'
