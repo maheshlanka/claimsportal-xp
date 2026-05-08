@@ -1,1 +1,99 @@
 #%RAML 1.0 Trait
+
+uses:
+  errors: error-types.raml
+
+traits:
+
+  standardErrorResponses:
+    responses:
+
+      400:
+        description: Bad Request - Invalid input request.
+        body:
+          application/json:
+            type: errors.ErrorResponse
+
+      401:
+        description: Unauthorized - Missing or invalid authentication credentials.
+        body:
+          application/json:
+            type: errors.ErrorResponse
+
+      403:
+        description: Forbidden - Client does not have permission.
+        body:
+          application/json:
+            type: errors.ErrorResponse
+
+      404:
+        description: Not Found - Requested resource not found.
+        body:
+          application/json:
+            type: errors.ErrorResponse
+
+      405:
+        description: Method Not Allowed - HTTP method is not supported.
+        body:
+          application/json:
+            type: errors.ErrorResponse
+
+      406:
+        description: Not Acceptable - Requested response media type is not supported.
+        body:
+          application/json:
+            type: errors.ErrorResponse
+
+      409:
+        description: Conflict - Duplicate or conflicting business state.
+        body:
+          application/json:
+            type: errors.ErrorResponse
+
+      413:
+        description: Payload Too Large - File or request body too large.
+        body:
+          application/json:
+            type: errors.ErrorResponse
+
+      415:
+        description: Unsupported Media Type.
+        body:
+          application/json:
+            type: errors.ErrorResponse
+
+      422:
+        description: Business validation failed.
+        body:
+          application/json:
+            type: errors.ErrorResponse
+
+      429:
+        description: Too Many Requests - Rate limit exceeded.
+        body:
+          application/json:
+            type: errors.ErrorResponse
+
+      500:
+        description: Internal Server Error.
+        body:
+          application/json:
+            type: errors.ErrorResponse
+
+      502:
+        description: Bad Gateway - Invalid downstream response.
+        body:
+          application/json:
+            type: errors.ErrorResponse
+
+      503:
+        description: Service Unavailable.
+        body:
+          application/json:
+            type: errors.ErrorResponse
+
+      504:
+        description: Gateway Timeout.
+        body:
+          application/json:
+            type: errors.ErrorResponse
