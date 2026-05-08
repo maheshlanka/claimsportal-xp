@@ -5,7 +5,7 @@ http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/m
         <http:listener-connection host="0.0.0.0" port="8081" />
     </http:listener-config>
     <apikit:config name="claimsportal-config" api="claimsportal.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
-    <api-gateway:autodiscovery apiId="20894728" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="fcbdf3ba-fb99-4bae-b47f-61da3312252b" flowRef="claimsportal-main" />
+    <api-gateway:autodiscovery apiId="20894728" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="fcbdf3ba-fb99-4bae-b47f-61da3312252b" flowRef="get:\healthCheck:claimsportal-config" />
 	<flow name="claimsportal-main">
         <http:listener config-ref="claimsportal-httpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
