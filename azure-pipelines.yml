@@ -17,7 +17,7 @@ stages:
   - job: BuildJob
     displayName: 'Build Job'
     steps:
-    - task: Maven@3
+    - task: Maven@4
       displayName: 'Build Mule Package'
       inputs:
         mavenPomFile: 'pom.xml'
@@ -38,7 +38,7 @@ stages:
   - job: PublishExchangeJob
     displayName: 'Publish to Exchange'
     steps:
-    - task: Maven@3
+    - task: Maven@4
       displayName: 'Publish Mule App to Exchange'
       inputs:
         mavenPomFile: 'pom.xml'
@@ -62,7 +62,7 @@ stages:
   - job: DeployJob
     displayName: 'Deploy Job'
     steps:
-    - task: Maven@3
+    - task: Maven@4
       displayName: 'Deploy to Runtime Manager'
       inputs:
         mavenPomFile: 'pom.xml'
