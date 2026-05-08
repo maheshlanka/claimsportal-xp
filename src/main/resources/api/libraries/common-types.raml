@@ -1,2 +1,44 @@
-#%RAML 1.0 Library
-usage:
+#%sRAML 1.0 Library
+types:
+
+  SuccessResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        example: true
+      message:
+        type: string
+        example: "Request processed successfully"
+      correlationId?:
+        type: string
+        example: "CORR-202605090001"
+
+  Pagination:
+    type: object
+    properties:
+      totalRecords:
+        type: integer
+        example: 100
+      page:
+        type: integer
+        example: 1
+      pageSize:
+        type: integer
+        example: 10
+
+  AuditInfo:
+    type: object
+    properties:
+      createdBy?:
+        type: string
+        example: "claims.portal"
+      createdDate?:
+        type: datetime
+        example: 2026-05-09T10:00:00Z
+      updatedBy?:
+        type: string
+        example: "claims.officer"
+      updatedDate?:
+        type: datetime
+        example: 2026-05-09T11:00:00Z
