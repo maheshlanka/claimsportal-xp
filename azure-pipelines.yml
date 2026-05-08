@@ -9,15 +9,47 @@ trigger:
 pool:
   name: 'Default'
 
-steps:
-- task: Maven@3
-  inputs:
-    mavenPomFile: 'pom.xml'
-    mavenOptions: '-Xmx3072m'
-    javaHomeOption: 'path'
-    jdkDirectory: '/Library/Java/JavaVirtualMachines/microsoft-11.jdk/Contents/Home'
-    jdkArchitectureOption: 'x64'
-    publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    goals: 'clean package'
-    options: '-DskipTests -U -DmuleDeploy -Danypoint.username=$(ANYPOINT_PLATFORM_USERNAME) -Danypoint.password=$(ANYPOINT_PLATFORM_PASSWORD)'
+stages:
+- stage: Build
+  displayName: 'Build Mule Application'
+  jobs:
+  - job: BuildJob
+    displayName: 'Build Job'
+    steps:
+    - task: Maven@3
+      displayName: 'Build Package'
+      inputs:
+        mavenPomFile: 'pom.xml'
+        mavenOptions: '-Xmx3072m'
+        javaHomeOption: 'path'
+        jdkDirectory: '/Library/Java/JavaVirtualMachines/microsoft-11.jdk/Contents/Home'
+        jdkArchitectureOption: 'x64'
+        publishJUnitResults: true
+        testResultsFiles: '**/surefire-reports/TEST-*.xml'
+        goals: 'clean package'
+        options: '-DskipTests -U'
+
+- stage: Deploy
+  displayName: 'Deploy Mule Application'
+  dependsOn: Build
+  condition: succeeded()
+  jobs:
+  - job: DeployJob
+    displayName: 'Deploy Job'
+    steps:
+    - task: Maven@3
+      displayName: 'Deploy to CloudHub / Runtime Manager'
+      inputs:
+        mavenPomFile: 'pom.xml'
+        mavenOptions: '-Xmx3072m'
+        javaHomeOption: 'path'
+        jdkDirectory: '/Library/Java/JavaVirtualMachines/microsoft-11.jdk/Contents/Home'
+        jdkArchitectureOption: 'x64'
+        publishJUnitResults: false
+        goals: 'deploy'
+        options: >
+          -DskipTests
+          -U
+          -DmuleDeploy
+          -Danypoint.username=$(ANYPOINT_PLATFORM_USERNAME)
+          -Danypoint.password=$(ANYPOINT_PLATFORM_PASSWORD)
