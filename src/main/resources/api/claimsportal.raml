@@ -17,3 +17,21 @@ baseUri: http://localhost:8081/api/{version}
             example:
               !include /healthCheckSuccessResponse.json
           
+
+
+
+uses:
+  common: libraries/common-types.raml
+  traitsLib: libraries/common-traits.raml
+  claimsLib: libraries/claims-types.raml
+  fileLib: libraries/file-types.raml
+  paymentLib: libraries/payment-types.raml
+  errorTraits: libraries/error-traits.raml
+
+securedBy:
+  - basicAuth
+
+securitySchemes:
+  basicAuth:
+    type: Basic Authentication
+    description: Basic Authentication or API Manager policy-based authentication.
