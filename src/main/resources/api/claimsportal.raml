@@ -1,11 +1,20 @@
 #%RAML 1.0
 title: claimsPortal-XPAPI
-description: This API will handle all the claim related handling like requests, endorsements and settlements. Updated host details to de deployed as maahi.claimsportal.com
+description:  Claims Portal API for claim creation, claim retrieval, claim data submission,
+  file upload/download, and claim payment processing.Updated host details to de deployed as maahi.claimsportal.com
 version: V1
 protocols:
   - HTTPS
   - HTTP
 baseUri: http://localhost:8081/api/{version}
+
+uses:
+  common: libraries/common-types.raml
+  traitsLib: libraries/common-traits.raml
+  claimsLib: libraries/claims-types.raml
+  fileLib: libraries/file-types.raml
+  paymentLib: libraries/payment-types.raml
+  errorTraits: libraries/error-traits.raml
 
 /healthCheck:
   get:
@@ -16,17 +25,6 @@ baseUri: http://localhost:8081/api/{version}
           application/json:
             example:
               !include /healthCheckSuccessResponse.json
-          
-
-
-
-uses:
-  common: libraries/common-types.raml
-  traitsLib: libraries/common-traits.raml
-  claimsLib: libraries/claims-types.raml
-  fileLib: libraries/file-types.raml
-  paymentLib: libraries/payment-types.raml
-  errorTraits: libraries/error-traits.raml
 
 securedBy:
   - basicAuth
