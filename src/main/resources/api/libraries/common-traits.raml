@@ -1,0 +1,73 @@
+#%RAML 1.0 Library
+traits:
+
+  clientHeaders:
+    headers:
+      client_id:
+        type: string
+        required: true
+        description: Client ID provided by API Manager.
+        example: "client-123"
+      client_secret:
+        type: string
+        required: true
+        description: Client secret provided by API Manager.
+        example: "secret-123"
+      correlationId:
+        type: string
+        required: false
+        description: Unique correlation ID for request tracking.
+        example: "CORR-202605090001"
+      sourceSystem:
+        type: string
+        required: false
+        example: "CLAIMS_PORTAL"
+      Accept:
+        type: string
+        required: false
+        enum:
+          - application/json
+          - application/xml
+          - text/csv
+          - multipart/form-data
+        default: application/json
+
+  pagination:
+    queryParameters:
+      page:
+        type: integer
+        required: false
+        default: 1
+        minimum: 1
+        example: 1
+      pageSize:
+        type: integer
+        required: false
+        default: 10
+        minimum: 1
+        maximum: 100
+        example: 10
+
+  dateRange:
+    queryParameters:
+      fromDate:
+        type: date-only
+        required: false
+        example: 2026-05-01
+      toDate:
+        type: date-only
+        required: false
+        example: 2026-05-09
+
+  responseFormat:
+    queryParameters:
+      responseFormat:
+        type: string
+        required: false
+        enum:
+          - json
+          - xml
+          - csv
+          - multipart
+        default: json
+        description: Response format requested by consumer.
