@@ -1,0 +1,73 @@
+#%RAML 1.0 Library
+
+types:
+
+  ErrorDetail:
+    type: object
+    properties:
+      field?:
+        type: string
+        example: "policyNumber"
+      issue:
+        type: string
+        example: "Policy number is mandatory"
+      rejectedValue?:
+        type: string
+        example: ""
+
+  ErrorResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        example: false
+      statusCode:
+        type: integer
+        example: 400
+      errorCode:
+        type: string
+        example: "CP-400-001"
+      errorType:
+        type: string
+        example: "BAD_REQUEST"
+      message:
+        type: string
+        example: "Invalid request"
+      details?:
+        type: ErrorDetail[]
+      correlationId?:
+        type: string
+        example: "CORR-202605090001"
+      timestamp:
+        type: datetime
+        example: 2026-05-09T10:00:00Z
+      path?:
+        type: string
+        example: "/claims"
+
+  ErrorCode:
+    type: string
+    enum:
+      - CP-400-001
+      - CP-400-002
+      - CP-400-003
+      - CP-400-004
+      - CP-401-001
+      - CP-401-002
+      - CP-403-001
+      - CP-404-001
+      - CP-404-002
+      - CP-405-001
+      - CP-406-001
+      - CP-409-001
+      - CP-409-002
+      - CP-413-001
+      - CP-415-001
+      - CP-422-001
+      - CP-422-002
+      - CP-429-001
+      - CP-500-001
+      - CP-500-002
+      - CP-502-001
+      - CP-503-001
+      - CP-504-001
