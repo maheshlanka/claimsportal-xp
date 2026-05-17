@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway"
+	xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:db="http://www.mulesoft.org/schema/mule/db" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd 
+
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+
+        http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+        <configuration-properties
+    file="properties/config-${mule.env}.yaml" />
+    <api-gateway:autodiscovery apiId="${api.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="fcbdf3ba-fb99-4bae-b47f-61da3312252b" flowRef="claimsportal-main" />
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="b681c10f-d831-47c9-a576-b367fcaf7f9e" >
+		<db:mssql-connection host="${db.host}" port="${db.port}" user="${db.username}" password="${secure::secure.db.password}" databaseName="${db.database}" />
+	</db:config>
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="df6d4867-09d6-45a1-a43b-4711e2ff48b8" file="properties/secure-config-${mule.env}.yaml" key="claimsportalkey1" />
+	
+	</mule>

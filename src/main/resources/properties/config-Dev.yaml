@@ -1,0 +1,10 @@
+app:
+  name: "claimsportal-xp"
+  env: "Dev"
+
+db:
+  host: "maahi.database.windows.net"
+  port: "1433"
+  database: "Maahi"
+  username: "maheshvaaslanka"
+  password: "Claims@2026"

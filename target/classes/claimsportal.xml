@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
-http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd
-http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd  http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
     <http:listener-config name="claimsportal-httpListenerConfig">
-        <http:listener-connection host="0.0.0.0" port="8081">
-		</http:listener-connection>
+        <http:listener-connection host="0.0.0.0" port="8081" />
     </http:listener-config>
     <apikit:config name="claimsportal-config" api="claimsportal.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
-    <api-gateway:autodiscovery apiId="${api.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="fcbdf3ba-fb99-4bae-b47f-61da3312252b" flowRef="claimsportal-main" />
-	<flow name="claimsportal-main">
+    <flow name="claimsportal-main">
         <http:listener config-ref="claimsportal-httpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
@@ -32,7 +29,7 @@ output application/json
                         <ee:set-variable variableName="httpStatus">400</ee:set-variable>
                     </ee:variables>
                 </ee:transform>
-				<logger level="INFO" doc:name="Logger" doc:id="517eb601-b737-4ba0-a5fe-751ca529c50c" message="test"/>
+                <logger level="INFO" doc:name="Logger" doc:id="517eb601-b737-4ba0-a5fe-751ca529c50c" message="test" />
             </on-error-propagate>
             <on-error-propagate type="APIKIT:NOT_FOUND">
                 <ee:transform doc:name="Transform Message">
@@ -129,17 +126,235 @@ output application/json
         </error-handler>
     </flow>
     <flow name="get:\healthCheck:claimsportal-config">
-        <ee:transform doc:name="Set Payload">
+        <db:select doc:name="Select" doc:id="c7ebcd7e-f160-4489-af62-9a18277e450e" config-ref="Database_Config">
+			<db:sql ><![CDATA[SELECT TOP 1 CLAIM_ID, CLAIM_NUMBER, CLAIM_STATUS
+FROM CLAIMS
+ORDER BY CLAIM_ID DESC]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Set Payload">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
   title: "healthCheckSuccessResponse",
-  Status: "System is Up!"
-} ]]></ee:set-payload>
+  status: "System is Up",
+  application: p("app.name"),
+  environment: p("app.env"),
+  database: "CONNECTED",
+  latestClaim: payload[0] default {},
+  timestamp: now()
+}]]></ee:set-payload>
             </ee:message>
         </ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="c20ebc30-4649-4175-8483-7fc0f1e31fd7" message='#["Payload is": payload]'/>
+        <logger level="INFO" doc:name="Logger" doc:id="c20ebc30-4649-4175-8483-7fc0f1e31fd7" message="#[&quot;Payload is&quot;: payload]" />
+    </flow>
+    <flow name="put:\payments\(paymentId)\status:application\json:claimsportal-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="paymentId">attributes.uriParams.'paymentId'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="put:\payments\(paymentId)\status:application\json:claimsportal-config" />
+    </flow>
+    <flow name="put:\claims\(claimId):application\json:claimsportal-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="claimId">attributes.uriParams.'claimId'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="put:\claims\(claimId):application\json:claimsportal-config" />
+    </flow>
+    <flow name="get:\claims:claimsportal-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+---
+{
+  claimsResponse: {
+    totalRecords: "1",
+    page: "1",
+    pageSize: "10",
+    claims: {
+      claim: {
+        claimId: "CLM100001",
+        policyNumber: "POL123456",
+        customerId: "CUST10001",
+        claimantName: "John Tan",
+        claimType: "MEDICAL",
+        claimStatus: "SUBMITTED",
+        incidentDate: "2026-05-01",
+        claimAmount: "2500.50",
+        currency: "HKD"
+      }
+    }
+  }
+} as Object {encoding: "UTF-8", mediaType: "application/xml"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\files\download\(fileId):claimsportal-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="fileId">attributes.uriParams.'fileId'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="get:\files\download\(fileId):claimsportal-config" />
+    </flow>
+    <flow name="get:\files\metadata\(fileId):claimsportal-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="fileId">attributes.uriParams.'fileId'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="get:\files\metadata\(fileId):claimsportal-config" />
+    </flow>
+    <flow name="get:\payments:claimsportal-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  totalRecords: 1,
+  page: 1,
+  pageSize: 10,
+  payments: [
+    {
+      success: true,
+      paymentId: "PAY100001",
+      claimId: "CLM100001",
+      transactionReference: "TXN202605090001",
+      paymentStatus: "SUCCESS",
+      message: "Payment processed successfully",
+      paidAmount: 2400,
+      currency: "HKD"
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\claims\(claimId):claimsportal-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="claimId">attributes.uriParams.'claimId'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+---
+{
+  claimResponse: {
+    success: "true",
+    message: "Claim fetched successfully",
+    claim: {
+      claimId: "CLM100001",
+      policyNumber: "POL123456",
+      customerId: "CUST10001",
+      claimantName: "John Tan",
+      claimType: "MEDICAL",
+      claimStatus: "IN_REVIEW",
+      incidentDate: "2026-05-01",
+      claimAmount: "2500.50",
+      currency: "HKD"
+    }
+  }
+} as Object {encoding: "UTF-8", mediaType: "application/xml"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\payments\(paymentId):claimsportal-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="paymentId">attributes.uriParams.'paymentId'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="get:\payments\(paymentId):claimsportal-config" />
+    </flow>
+    <flow name="post:\claims\data:application\json:claimsportal-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  success: true,
+  message: "Claim data accepted for processing",
+  batchId: "BATCH20260509001",
+  acceptedRecords: 1,
+  rejectedRecords: 0
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\claims\data:application\xml:claimsportal-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  success: true,
+  message: "Claim data accepted for processing",
+  batchId: "BATCH20260509001",
+  acceptedRecords: 1,
+  rejectedRecords: 0
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\claims\data:multipart\form-data:claimsportal-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  success: true,
+  message: "Claim data accepted for processing",
+  batchId: "BATCH20260509001",
+  acceptedRecords: 1,
+  rejectedRecords: 0
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\claims\data:text\csv:claimsportal-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  success: true,
+  message: "Claim data accepted for processing",
+  batchId: "BATCH20260509001",
+  acceptedRecords: 1,
+  rejectedRecords: 0
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\claims:application\json:claimsportal-config">
+        <logger level="INFO" message="post:\claims:application\json:claimsportal-config" />
+    </flow>
+    <flow name="post:\claims:application\xml:claimsportal-config">
+        <logger level="INFO" message="post:\claims:application\xml:claimsportal-config" />
+    </flow>
+    <flow name="post:\claims:multipart\form-data:claimsportal-config">
+        <logger level="INFO" message="post:\claims:multipart\form-data:claimsportal-config" />
+    </flow>
+    <flow name="post:\claims:text\csv:claimsportal-config">
+        <logger level="INFO" message="post:\claims:text\csv:claimsportal-config" />
+    </flow>
+    <flow name="post:\payments:application\json:claimsportal-config">
+        <logger level="INFO" message="post:\payments:application\json:claimsportal-config" />
+    </flow>
+    <flow name="post:\files\upload:multipart\form-data:claimsportal-config">
+        <logger level="INFO" message="post:\files\upload:multipart\form-data:claimsportal-config" />
     </flow>
 </mule>
